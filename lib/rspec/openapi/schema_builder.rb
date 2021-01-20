@@ -72,7 +72,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       content: {
         normalize_content_type(record.request_content_type) => {
           schema: build_property(record.request_params),
-          example: (record.request_params if example_enabled?),
+          example: (build_example(record.request_params) if example_enabled?),
         }.compact
       }
     }
@@ -95,7 +95,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_type(value)
-    case value
+   case value
     when String
       { type: 'string' }
     when Integer
@@ -120,12 +120,25 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   # Convert an always-String param to an appropriate type
-  def try_cast(value)
+  def try_cast(value)    
     begin
       Integer(value)
     rescue TypeError, ArgumentError
       value
     end
+  end
+
+  def build_example(value)
+    return nil if value.nil?
+    response = {}
+    value.each do |v|
+      if v[1].class == ActionDispatch::Http::UploadedFile
+        response.store(v[0], v[1].original_filename)
+      else
+        response.store(v[0], v[1])
+      end
+    end
+    response
   end
 
   def normalize_path(path)
