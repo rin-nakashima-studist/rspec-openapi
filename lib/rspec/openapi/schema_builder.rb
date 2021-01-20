@@ -111,7 +111,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     when ActionDispatch::Http::UploadedFile
       { type: 'string', format: 'binary' }
     when NilClass
-      { type: 'null' }
+      { type: 'string', nullable: true }
     else
       raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
     end
