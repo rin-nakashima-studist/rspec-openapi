@@ -95,7 +95,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   def build_type(value)
-   case value
+    case value
     when String
       { type: 'string' }
     when Integer
