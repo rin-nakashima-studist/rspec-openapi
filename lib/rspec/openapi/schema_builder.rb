@@ -120,7 +120,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
   end
 
   # Convert an always-String param to an appropriate type
-  def try_cast(value)    
+  def try_cast(value)
     begin
       Integer(value)
     rescue TypeError, ArgumentError
@@ -130,15 +130,13 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
 
   def build_example(value)
     return nil if value.nil?
-    response = {}
-    value.each do |v|
-      if v[1].class == ActionDispatch::Http::UploadedFile
-        response.store(v[0], v[1].original_filename)
+    value.map do |key, v|
+    if v.is_a? ActionDispatch::Http::UploadedFile
+        [key, v.original_filename]
       else
-        response.store(v[0], v[1])
+        [key, v]
       end
     end
-    response
   end
 
   def normalize_path(path)
