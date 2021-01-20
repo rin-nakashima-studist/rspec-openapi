@@ -106,12 +106,10 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       { type: 'boolean' }
     when Array
       { type: 'array' }
-    when ActiveSupport::HashWithIndifferentAccess
-      { type: 'string', format: 'binary' }
-    when ActionDispatch::Http::UploadedFile
-      { type: 'string', format: 'binary' }
     when Hash
       { type: 'object' }
+    when ActionDispatch::Http::UploadedFile
+      { type: 'string', format: 'binary' }
     when NilClass
       { type: 'string', nullable: true }
     else
