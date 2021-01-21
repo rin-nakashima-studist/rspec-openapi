@@ -72,7 +72,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       content: {
         normalize_content_type(record.request_content_type) => {
           schema: build_property(record.request_params),
-          example: (record.request_params if example_enabled?),
+          example: (build_example(record.request_params) if example_enabled?),
         }.compact
       }
     }
@@ -111,7 +111,7 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
     when ActionDispatch::Http::UploadedFile
       { type: 'string', format: 'binary' }
     when NilClass
-      { type: 'null' }
+      { type: 'string', nullable: true }
     else
       raise NotImplementedError, "type detection is not implemented for: #{value.inspect}"
     end
@@ -123,6 +123,17 @@ class << RSpec::OpenAPI::SchemaBuilder = Object.new
       Integer(value)
     rescue TypeError, ArgumentError
       value
+    end
+  end
+
+  def build_example(value)
+    return nil if value.nil?
+    value.map do |key, v|
+    if v.is_a? ActionDispatch::Http::UploadedFile
+        [key, v.original_filename]
+      else
+        [key, v]
+      end
     end
   end
 
